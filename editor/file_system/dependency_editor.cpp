@@ -910,6 +910,11 @@ void OrphanResourcesDialog::ok_pressed() {
 	delete_confirm->popup_centered();
 }
 
+void OrphanResourcesDialog::_item_checked() {
+	TreeItem *edited = files->get_edited();
+	edited->propagate_check(0, true);
+}
+
 bool OrphanResourcesDialog::_fill_owners(EditorFileSystemDirectory *efsd, HashMap<String, int> &refs, TreeItem *p_parent) {
 	if (!efsd) {
 		return false;
@@ -921,7 +926,9 @@ bool OrphanResourcesDialog::_fill_owners(EditorFileSystemDirectory *efsd, HashMa
 		TreeItem *dir_item = nullptr;
 		if (p_parent) {
 			dir_item = files->create_item(p_parent);
+			dir_item->set_cell_mode(0, TreeItem::CELL_MODE_CHECK);
 			dir_item->set_text(0, efsd->get_subdir(i)->get_name());
+			dir_item->set_editable(0, true);
 			dir_item->set_icon(0, files->get_theme_icon(SNAME("folder"), SNAME("FileDialog")));
 		}
 		bool children = _fill_owners(efsd->get_subdir(i), refs, dir_item);
@@ -1042,4 +1049,5 @@ OrphanResourcesDialog::OrphanResourcesDialog() {
 	files->set_hide_root(true);
 	vbc->add_margin_child(TTR("Resources Without Explicit Ownership:"), files, true);
 	files->connect("button_clicked", callable_mp(this, &OrphanResourcesDialog::_button_pressed));
+	files->connect("item_edited", callable_mp(this, &OrphanResourcesDialog::_item_checked));
 }
