@@ -930,6 +930,7 @@ bool OrphanResourcesDialog::_fill_owners(EditorFileSystemDirectory *efsd, HashMa
 			dir_item->set_text(0, efsd->get_subdir(i)->get_name());
 			dir_item->set_editable(0, true);
 			dir_item->set_icon(0, files->get_theme_icon(SNAME("folder"), SNAME("FileDialog")));
+			dir_item->set_metadata(0, efsd->get_subdir(i)->get_path());
 		}
 		bool children = _fill_owners(efsd->get_subdir(i), refs, dir_item);
 
@@ -991,12 +992,12 @@ void OrphanResourcesDialog::show() {
 
 void OrphanResourcesDialog::_find_to_delete(TreeItem *p_item, List<String> &r_paths) {
 	while (p_item) {
-		if (p_item->get_cell_mode(0) == TreeItem::CELL_MODE_CHECK && p_item->is_checked(0)) {
-			r_paths.push_back(p_item->get_metadata(0));
-		}
-
 		if (p_item->get_first_child()) {
 			_find_to_delete(p_item->get_first_child(), r_paths);
+		}
+
+		if (p_item->get_cell_mode(0) == TreeItem::CELL_MODE_CHECK && p_item->is_checked(0)) {
+			r_paths.push_back(p_item->get_metadata(0));
 		}
 
 		p_item = p_item->get_next();
